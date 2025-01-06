@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senior High School Sitio - Mabuhay Lost and Found Management System</title>
+    <style>
+       body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h1 {
+            color: #cc0000;
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background-color: #ffffff;
+            border: 2px solid #000000;
+            border-radius: 12px;
+            padding: 15px;
+            width: calc(33.333% - 20px);
+            min-width: 200px;
+            margin-bottom: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .stat-card:hover, .stat-card.active {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            background-color: #f0f0f0;
+        }
+        .stat-card h3 {
+            color: #cc0000;
+            margin-top: 0;
+            font-size: 1.2em;
+        }
+        .stat-card p {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #000000;
+            margin: 10px 0 0;
+        }
+        .add-item-form, .items-container {
+            background-color: #ffffff;
+            border: 2px solid #000000;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .add-item-form h2, .items-container h2 {
+            color: #cc0000;
+            margin-top: 0;
+            font-size: 1.5em;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        button, input[type="text"], input[type="date"], input[type="file"], select {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #000000;
+            border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        button {
+            background-color: #cc0000;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        button:hover {
+            background-color: #990000;
+        }
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #cc0000;
+            font-weight: bold;
+        }
+        .item-card {
+            background-color: #ffffff;
+            border: 2px solid #000000;
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .item-card img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .claim-button {
+            background-color: #000000;
+            color: #ffffff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .claim-button:hover {
+            background-color: #333333;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        .popup-content {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            width: 400px;
+        }
+        .close-popup {
+            margin-top: 15px;
+            background-color: #000000;
+            color: #ffffff;
+        }
+        .close-popup:hover {
+            background-color: #333333;
+        }
+        #searchBar {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 2px solid #000000;
+            border-radius: 25px;
+            width: 100%;
+            font-size: 1em;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        #privacyWarning {
+            background-color: #ffdddd;
+            color: #cc0000;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+            .stat-card {
+                width: calc(50% - 20px);
+            }
+            .item-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 10px;
+            }
+            h1 {
+                font-size: 1.2em;
+            }
+            .stat-card {
+                width: 100%;
+            }
+            .item-grid {
+                grid-template-columns: 1fr;
+            }
+            .popup-content {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SENIOR HIGH SCHOOL SITIO - MABUHAY LOST AND FOUND MANAGEMENT SYSTEM</h1>
+
+        <div id="privacyWarning" style="display: none;">
+            Please add an item first to view the lost and found items.
+        </div>
+
+        <div class="stats" style="display: none;">
+            <div class="stat-card" onclick="showAll()" id="totalCard">
+                <h3>Total Items</h3>
+                <p id="totalItems">0</p>
+            </div>
+            <div class="stat-card" onclick="showUnclaimed()" id="unclaimedCard">
+                <h3>Unclaimed Items</h3>
+                <p id="unclaimedItems">0</p>
+            </div>
+            <div class="stat-card" onclick="showClaimed()" id="claimedCard">
+                <h3>Claimed Items</h3>
+                <p id="claimedItems">0</p>
+            </div>
+        </div>
+
+        <div class="add-item-form">
+            <h2>Report a Lost Item</h2>
+            <form id="addItemForm">
+                <div class="form-group">
+                    <label for="finder">Person Who Found the Item:</label>
+                    <input type="text" id="finder" name="finder" required>
+                </div>
+                <div class="form-group">
+                    <label for="itemName">Item Name:</label>
+                    <input type="text" id="itemName" name="itemName" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastSeen">Last Seen Location:</label>
+                    <input type="text" id="lastSeen" name="lastSeen" required>
+                </div>
+                <div class="form-group">
+                    <label for="date">Date Found:</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="gradeLevel">Grade Level:</label>
+                    <select id="gradeLevel" name="gradeLevel" required>
+                        <option value="">Select Grade Level</option>
+                        <option value="11">Grade 11</option>
+                        <option value="12">Grade 12</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="strand">Strand:</label>
+                    <input type="text" id="strand" name="strand" required>
+                </div>
+                <div class="form-group">
+                    <label for="section">Section:</label>
+                    <input type="text" id="section" name="section" required>
+                </div>
+                <div class="form-group">
+                    <label for="photo">Upload Photo:</label>
+                    <input type="file" id="photo" name="photo" accept="image/*">
+                </div>
+                <button type="submit">Add Item</button>
+            </form>
+        </div>
+
+        <div class="items-container" style="display: none;">
+            <input type="text" id="searchBar" placeholder="Search" class="search-bar">
+            <div id="itemGrid" class="item-grid">
+                <!-- Items will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <div id="addItemPopup" class="popup">
+        <div class="popup-content">
+            <p>Thank you! Please go to the office to hand over the item you found.</p>
+            <button class="close-popup" onclick="closePopup('addItemPopup')">Close</button>
+        </div>
+    </div>
+
+    <div id="claimItemPopup" class="popup">
+        <div class="popup-content">
+            <h2>Claim Item</h2>
+            <form id="claimItemForm">
+                <div class="form-group">
+                    <label for="claimerName">Your Name:</label>
+                    <input type="text" id="claimerName" name="claimerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="claimerGrade">Your Grade Level:</label>
+                    <select id="claimerGrade" name="claimerGrade" required>
+                        <option value="">Select Grade Level</option>
+                        <option value="11">Grade 11</option>
+                        <option value="12">Grade 12</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="claimerStrand">Your Strand:</label>
+                    <input type="text" id="claimerStrand" name="claimerStrand" required>
+                </div>
+                <div class="form-group">
+                    <label for="claimerSection">Your Section:</label>
+                    <input type="text" id="claimerSection" name="claimerSection" required>
+                </div>
+                <button type="submit">Submit Claim</button>
+            </form>
+            <button class="close-popup" onclick="closePopup('claimItemPopup')">Cancel</button>
+        </div>
+    </div>
+
+<script>
+    let items = [];
+    let claimedCount = 0;
+    let currentFilter = 'all';
+    let currentClaimIndex = -1;
+    let isFirstItemAdded = false;
+
+    let exampleItems = [
+        {
+            finder: "Mr. Rodriguez",
+            itemName: "Scientific Calculator",
+            lastSeen: "Mathematics Classroom",
+            date: "2024-05-15",
+            gradeLevel: "12",
+            strand: "STEM",
+            section: "Pythagoras",
+            photo: null,
+            claimed: false,
+            claimInfo: null
+        },
+        {
+            finder: "Library Staff",
+            itemName: "Blue Backpack",
+            lastSeen: "School Library",
+            date: "2024-05-10",
+            gradeLevel: "11",
+            strand: "ABM",
+            section: "Entrepreneurs",
+            photo: null,
+            claimed: false,
+            claimInfo: null
+        }
+    ];
+
+    function updateStats() {
+        document.getElementById('totalItems').textContent = items.length;
+        document.getElementById('unclaimedItems').textContent = items.length - claimedCount;
+        document.getElementById('claimedItems').textContent = claimedCount;
+    }
+
+    function addItem(event) {
+        event.preventDefault();
+        const form = event.target;
+        const newItem = {
+            finder: form.finder.value,
+            itemName: form.itemName.value,
+            lastSeen: form.lastSeen.value,
+            date: form.date.value,
+            gradeLevel: form.gradeLevel.value,
+            strand: form.strand.value,
+            section: form.section.value,
+            photo: form.photo.files[0] ? URL.createObjectURL(form.photo.files[0]) : null,
+            claimed: false,
+            claimInfo: null
+        };
+        
+        // First time item is added
+        if (!isFirstItemAdded) {
+            isFirstItemAdded = true;
+            // Add example items when first real item is added
+            items = items.concat(exampleItems);
+            document.querySelector('.stats').style.display = 'flex';
+            document.querySelector('.items-container').style.display = 'block';
+            document.getElementById('privacyWarning').style.display = 'none';
+        }
+        
+        items.push(newItem);
+        
+        displayItems();
+        updateStats();
+        form.reset();
+        showPopup('addItemPopup');
+    }
+
+    function displayItems() {
+        const itemGrid = document.getElementById('itemGrid');
+        itemGrid.innerHTML = '';
+        
+        items.forEach((item, index) => {
+            if ((currentFilter === 'all') ||
+                (currentFilter === 'unclaimed' && !item.claimed) ||
+                (currentFilter === 'claimed' && item.claimed)) {
+                const itemCard = document.createElement('div');
+                itemCard.className = 'item-card';
+                itemCard.innerHTML = `
+                    <h3>${item.itemName}</h3>
+                    <p>Found by: ${item.finder}</p>
+                    <p>Last seen: ${item.lastSeen}</p>
+                    <p>Date: ${item.date}</p>
+                    <p>Grade Level: ${item.gradeLevel}</p>
+                    <p>Strand: ${item.strand}</p>
+                    <p>Section: ${item.section}</p>
+                    ${item.photo ? `<img src="${item.photo}" alt="${item.itemName}">` : ''}
+                    ${!item.claimed ? `<button class="claim-button" onclick="openClaimForm(${index})">Claim</button>` : ''}
+                    ${item.claimed ? `
+                        <p>Claimed by: ${item.claimInfo.name}</p>
+                        <p>Claimed on: ${item.claimInfo.date}</p>
+                    ` : ''}
+                `;
+                itemGrid.appendChild(itemCard);
+            }
+        });
+    }
+
+    function openClaimForm(index) {
+        currentClaimIndex = index;
+        showPopup('claimItemPopup');
+    }
+
+    function submitClaim(event) {
+        event.preventDefault();
+        if (currentClaimIndex === -1) return;
+
+        const form = event.target;
+        const claimInfo = {
+            name: form.claimerName.value,
+            grade: form.claimerGrade.value,
+            strand: form.claimerStrand.value,
+            section: form.claimerSection.value,
+            date: new Date().toLocaleString()
+        };
+
+        items[currentClaimIndex].claimed = true;
+        items[currentClaimIndex].claimInfo = claimInfo;
+        claimedCount++;
+        updateStats();
+        displayItems();
+        closePopup('claimItemPopup');
+        form.reset();
+        alert("Please go to the office to retrieve your lost item.");
+    }
+
+    function searchItems() {
+        const searchTerm = document.getElementById('searchBar').value.toLowerCase();
+        const filteredItems = items.filter(item => 
+            (item.itemName.toLowerCase().includes(searchTerm) ||
+            item.finder.toLowerCase().includes(searchTerm) ||
+            item.lastSeen.toLowerCase().includes(searchTerm) ||
+            item.strand.toLowerCase().includes(searchTerm) ||
+            item.section.toLowerCase().includes(searchTerm)) &&
+            ((currentFilter === 'all') ||
+            (currentFilter === 'unclaimed' && !item.claimed) ||
+            (currentFilter === 'claimed' && item.claimed))
+        );
+        displayFilteredItems(filteredItems);
+    }
+
+    function displayFilteredItems(filteredItems) {
+        const itemGrid = document.getElementById('itemGrid');
+        itemGrid.innerHTML = '';
+        
+        filteredItems.forEach((item, index) => {
+            const itemCard = document.createElement('div');
+            itemCard.className = 'item-card';
+            itemCard.innerHTML = `
+                <h3>${item.itemName}</h3>
+                <p>Found by: ${item.finder}</p>
+                <p>Last seen: ${item.lastSeen}</p>
+                <p>Date: ${item.date}</p>
+                <p>Grade Level: ${item.gradeLevel}</p>
+                <p>Strand: ${item.strand}</p>
+                <p>Section: ${item.section}</p>
+                ${item.photo ? `<img src="${item.photo}" alt="${item.itemName}">` : ''}
+                ${!item.claimed ? `<button class="claim-button" onclick="openClaimForm(${items.indexOf(item)})">Claim</button>` : ''}
+                ${item.claimed ? `
+                    <p>Claimed by: ${item.claimInfo.name}</p>
+                    <p>Claimed on: ${item.claimInfo.date}</p>
+                ` : ''}
+            `;
+            itemGrid.appendChild(itemCard);
+        });
+    }
+
+    function showAll() {
+        currentFilter = 'all';
+        setActiveCard('totalCard');
+        displayItems();
+    }
+
+    function showUnclaimed() {
+        currentFilter = 'unclaimed';
+        setActiveCard('unclaimedCard');
+        displayItems();
+    }
+
+    function showClaimed() {
+        currentFilter = 'claimed';
+        setActiveCard('claimedCard');
+        displayItems();
+    }
+
+    function setActiveCard(activeCardId) {
+        document.getElementById('totalCard').classList.remove('active');
+        document.getElementById('unclaimedCard').classList.remove('active');
+        document.getElementById('claimedCard').classList.remove('active');
+        document.getElementById(activeCardId).classList.add('active');
+    }
+
+    function showPopup(popupId) {
+        document.getElementById(popupId).style.display = 'block';
+    }
+
+    function closePopup(popupId) {
+        document.getElementById(popupId).style.display = 'none';
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('addItemForm').addEventListener('submit', addItem);
+        document.getElementById('claimItemForm').addEventListener('submit', submitClaim);
+        document.getElementById('searchBar').addEventListener('input', searchItems);
+
+        // Initialize with items hidden
+        document.getElementById('privacyWarning').style.display = 'block';
+        document.querySelector('.stats').style.display = 'none';
+        document.querySelector('.items-container').style.display = 'none';
+    });
+    </script>
+</body>
+</html>
